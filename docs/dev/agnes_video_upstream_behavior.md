@@ -90,6 +90,7 @@
 |------|-------------|----------|------|
 | 503 | `video_queue_full` | `video queue is full, please retry later (request id: ...)`。2.5-flash 上观测到**连续 25 次提交、跨约 12 分钟全部被拒**（10:40–10:52），期间同 Key 的 v2.0 提交正常通过 | 免费 2.5-flash 队列饱和，按模型分池；被拒不产生任务、不消耗渲染配额，可安全重试 |
 | 503 | `fail_to_fetch_task` | 一次观测（11:05:13），25s 后重试即成功 | 上游内部瞬时故障，可重试 |
+| 503 | —（`message` 有值） | body `message` 为 `No available channel for model agnes-video-v2.0 under group default (distributor) (request id: ...)`（Issue #92，2026-10-12，同任务前 5 次**图片**调用也返回裸 503 `server error`） | 网关侧该模型当前无可用渠道/容量，属过载族瞬时错误；同样被拒不建任务、不消耗配额。与 `video_queue_full` 的区别是**没有队列语义码**，v7.1 起按「所有 503 归忙轨」统一覆盖 |
 | 429 | — | 未在本轮复现 | 现有换 Key 逻辑针对此码 |
 | 401 | — | 未在本轮复现 | Key 与域名不匹配（见 FAQ） |
 
@@ -100,7 +101,7 @@
 > `AGNES_VIDEO_BUSY_RETRY_ATTEMPTS`：**首跳 0s 贴着限流** + 之后固定间隔 + **次数**封顶），
 > 错误文案透出 `message` + `code`。
 
-### 4.0.1 已知缺口：body 无 `code` 的裸 503 走普通 5xx 配额（Issue #80 / #81 / #83，2026-10-02）
+### 4.0.1 已闭合缺口：body 无 `code` 的裸 503 曾走普通 5xx 配额（Issue #80 / #81 / #83 / #84 / #92，2026-10-02 起）
 
 **实测证据**（用户反馈的 `Model call error` 序列，#81，App 6.4.5 / Windows）：
 
@@ -120,9 +121,15 @@
 也会返回**无 code 的裸 503**，此时应用只享 5 次普通配额（约 5.5 分钟），而本节实测队列饱和**可持续 12 分钟以上**
 ——应用会在「再等一分钟就能排上」时提前放弃，用户侧表现为无端失败。
 
-**已实施（v7.1）**：`HTTP 503` 且 `code` 为空/未知的响应已并入忙轨，与队列满共用同一轨道
-（v7.2 起＝次数封顶 `AGNES_VIDEO_BUSY_RETRY_ATTEMPTS`，默认 15；不再与普通 5xx 混用配额）。
-需补单测：mock 连续裸 503 → 断言受次数封顶约束且不与普通 5xx 混用配额。
+**已实施（v7.1，2026-10-09 随 v7.1.0 发布）**：`HTTP 503` 且 `code` 为空/未知的响应已并入忙轨，与队列满共用同一轨道
+（v7.2 起＝次数封顶 `AGNES_VIDEO_BUSY_RETRY_ATTEMPTS`，默认 15；不再与普通 5xx 混用配额）。单测已补：
+`tests/test_upstream_error_handling.py::test_bare_503_enters_busy_track_not_capped_by_max_retries`
+（连续裸 503 → 调用次数可超过 `max_retries` 才成功）＋ `test_busy_track_interval_is_fixed`（首跳 0s、之后固定不增长）。
+
+> **Issue #92（2026-10-12）为该缺口在 7.0.5 上的又一例**：`max retries (5) exceeded` + 裸 503
+> `No available channel ...`。因用户版本早于 v7.1.0，处理口径是「外部容量故障 + 引导升级到 v7.1.0」，未改代码。
+> 注意忙轨只能覆盖「渠道稍后恢复」的情形：若上游长时间确实无该模型渠道，15 次重试仍会耗尽并抛通用技术报错
+> （裸 503 无队列语义，不下发 `error.video.queue_full` 文案键）。
 
 > 本轮（2026-10-02）按外部故障处理，仅回复用户 + 记档，未改代码。#80 与 #83 为同一用户（App 7.0.0，
 > 无 traceback），#81 为 6.4.5 且附完整 traceback，三例错误文案与路径一致（`reference` / keyframes）。
