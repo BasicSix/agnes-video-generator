@@ -32,6 +32,16 @@
 
 完全可以。本项目专为自托管设计。克隆仓库后运行 `./start.sh`，服务即启动在 `http://localhost:8765`。无外部依赖、无云锁定。详见 [快速开始](./getting-started.zh.md)。
 
+### 能让 AI Agent 来操作这个项目吗？
+
+可以，本项目就是按这个思路设计的。仓库自带为 AI 编程助手写的 [`AGENTS.md`](../../AGENTS.md)：clone 之后让你的 Agent 读它、安装依赖、配置 API Key、启动服务，再让它"跑一下部署验证检查"——它会按四层验证清单逐项执行并汇报结果。
+
+如果你不想让 Agent 先把这个项目摸一遍，可以装上 **[伴随技能库](https://github.com/lcy362/agnes-video-generator-skills)**：三个现成技能（使用 / 排障 / 贡献），外加任务控制、部署验证、取证等小脚本。完整说明见 **[让 AI Agent 来操作本项目](./agent-operations.zh.md)**。
+
+### 我同时在用好几个 AI Agent，技能怎么保持同步？
+
+把技能库在 [flint](https://github.com/lcy362/flint) 里登记一次即可。flint 是本地优先的技能管理器：把技能集中在一处，通过 symlink 或复制投放到你用到的每个 Agent 目录与项目目录，将来新增 Agent 只需一键分发。它完全本地运行——无云端、无账号、无上报。安装：`npx flint-skills-hub`（界面在 `http://localhost:8787`）。整体思路见 **[让 AI Agent 来操作本项目](./agent-operations.zh.md)**。
+
 ### 生成失败了怎么办？
 
 大多数失败由模型服务波动、网络超时或限流等**偶发因素**导致。请在应用内的**失败面板**先点击「重试任务」，任务会从失败环节断点续传，多数情况下即可自愈，无需重新提交。

@@ -67,12 +67,34 @@ schema.org structured data for SEO/GEO indexing. GitHub does not execute this sc
 
 > **🖥️ Try it now — no install needed:** Visit [video.lichuanyang.top](https://video.lichuanyang.top) and experience **Simple Video** mode directly in your browser. Just enter a prompt and generate a free AI video instantly.
 
-## 🚀 Two Ways to Use — Both Completely Free
+## 🚀 Three Ways to Use — All Completely Free
 
 | Project | Run Where | Features | Link |
 |---------|-----------|----------|------|
 | **[Agnes Video Generator](https://github.com/lcy362/agnes-video-generator)** (this project) | **Download & run locally** | **More powerful** — TTS narration, auto subtitles, digital anchor, image-to-video, keyframes animation, manuscript-to-video, checkpoint resume & more | [GitHub](https://github.com/lcy362/agnes-video-generator) |
 | **[FreeShortVideoStudio](https://github.com/lcy362/free-short-video-studio)** | **Fully online, in the browser** | Lightweight, zero install — no setup at all, **features under active construction** | [video.lichuanyang.top/studio](https://video.lichuanyang.top/studio) · [GitHub](https://github.com/lcy362/free-short-video-studio) |
+| **[Agnes Video Generator](https://github.com/lcy362/agnes-video-generator)** — **agent-ready** | **Driven by an AI coding agent** | **Least effort** — ships [`AGENTS.md`](AGENTS.md) plus a companion skill set (usage / troubleshoot / contrib): the agent installs the project, generates the video and debugs failures itself | [Agent guide](docs/public/agent-operations.md) · [Flint](https://github.com/lcy362/flint) |
+
+## 🤖 Or Let an AI Agent Drive It
+
+This project ships an [`AGENTS.md`](AGENTS.md) written for AI coding assistants, so an agent can install it, generate videos and debug failures after reading one document. Clone the repo, then tell your agent:
+
+> "Read the AGENTS.md in this project, install dependencies, configure the API key `<your-key>`, and start the server."
+
+Then ask it to prove the setup with `"Run the deployment verification checks."` — it executes the four-layer checklist (connectivity → static analysis → endpoint tests → features) and reports each result.
+
+**Want your agent to skip the learning step?** The companion skill set packages the everyday operations into three ready-made skills — **usage** (deploy, pick a mode, submit and watch a task, edit artifacts at Manual Mode checkpoints), **troubleshoot** (find out why a run failed) and **contrib** (change the code, get the PR through CI) — with small scripts for task control, deployment verification, evidence collection, media checks and the local CI gate:
+
+**[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # any agent that reads .agents/skills
+```
+
+**Using several agents?** [flint](https://github.com/lcy362/flint) is a local-first skills manager that keeps the skills in one place and symlinks or copies them into every agent and project directory you use: `npx flint-skills-hub`.
+
+Full guide: **[Let an AI Agent Operate This Project](docs/public/agent-operations.md)**.
 
 ## ⭐ Support & Contribute
 
@@ -158,6 +180,7 @@ Full walkthrough: [Getting Started → Configure API Key](docs/public/getting-st
 
 - **[Features](docs/public/features.md)** — Creation modes, the completely free AI model chain, AI narration & smart subtitles, flexible creative controls, production-grade reliability, and the multilingual Web UI.
 - **[Getting Started](docs/public/getting-started.md)** — Install and deploy in 4 ways: Manual (`start.sh`), Docker, npm (`npx free-short-video`), or AI-Agent assisted.
+- **[AI Agent Operations](docs/public/agent-operations.md)** — Three levels of agent-driven operation: hand your agent `AGENTS.md`, install the companion skill set, or distribute it to every agent with flint.
 - **[Usage Guide](docs/public/usage.md)** — Configure your API key, pick a video mode, resume from checkpoints, the three chaining modes, and logs & output layout.
 - **[Architecture](docs/public/architecture.md)** — Project structure and tech stack.
 - **[API Reference](docs/public/api.md)** — Full REST endpoint list (progress via polling, no WebSocket).

@@ -151,7 +151,10 @@ ffmpeg -version
 
 ## 方式 D：AI Agent 辅助部署
 
-本项目专为 AI 编程助手友好设计。先由你下载代码并准备好 API Key：
+本项目专为 AI 编程助手友好设计。接入方式有三档，够用就停。权威说明见
+**[让 AI Agent 来操作本项目](agent-operations.zh.md)**。
+
+**第一档 —— 把 Agent 指向本仓库。** 先由你下载代码并准备好 API Key：
 
 ```bash
 git clone https://github.com/lcy362/agnes-video-generator.git
@@ -167,6 +170,27 @@ Agent 会读取 `AGENTS.md`（一份完整的部署指引），自动完成：�
 > "跑一下部署验证检查。"
 
 Agent 会按 `AGENTS.md` 中的四层验证清单（连通性 → 静态分析 → 端点测试 → 字幕功能）逐项执行并汇报结果。
+
+**第二档 —— 装上伴随技能库。** `AGENTS.md` 讲的是怎么*改*这个项目；伴随技能库讲的是怎么*操作*它，
+让 Agent 不必先把这个项目摸一遍。技能库含三个技能——`agnes-video-usage`（部署、选模式、提交并观察任务、
+在手动模式检查点改产物）、`agnes-video-troubleshoot`（查清一次失败的真正原因）、
+`agnes-video-contrib`（改代码并让 PR 通过 CI）——以及任务控制、部署验证、取证、媒体校验与本地 CI 门禁等小脚本：
+
+> **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
+```
+
+**第三档 —— 一套技能，所有 Agent。** 如果你在多个 Agent 之间切换，把技能库在
+[flint](https://github.com/lcy362/flint) 里登记一次即可：它是本地优先的技能管理器，
+通过 symlink 或复制把技能投放到你用到的每个 Agent 目录与项目目录。
+
+```bash
+npx flint-skills-hub
+```
+
 
 ---
 

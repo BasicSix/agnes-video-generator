@@ -155,7 +155,11 @@ ffmpeg -version
 
 ## Option D: AI Agent Assisted Setup
 
-This project is designed for AI coding assistants. First, download the code and prepare your API key:
+This project is designed for AI coding assistants. There are three levels to it — stop at whichever
+one is enough. The authoritative description is
+**[Let an AI Agent Operate This Project](agent-operations.md)**.
+
+**Level 1 — point your agent at this repository.** First, download the code and prepare your API key:
 
 ```bash
 git clone https://github.com/lcy362/agnes-video-generator.git
@@ -171,3 +175,26 @@ The agent will read `AGENTS.md` (a comprehensive deployment guide) and handle: e
 > "Run the deployment verification checks."
 
 The agent will execute the 4-layer checklist from `AGENTS.md` (connectivity → static analysis → endpoint testing → subtitle feature) and report results.
+
+**Level 2 — install the companion skill set.** `AGENTS.md` describes how to *change* this project;
+the companion skill set covers *operating* it, so the agent doesn't have to work the project out
+first. It ships three skills — `agnes-video-usage` (deploy, pick a mode, submit and watch a task,
+edit artifacts at Manual Mode checkpoints), `agnes-video-troubleshoot` (find out why a run failed)
+and `agnes-video-contrib` (change the code and get the PR through CI) — plus small scripts for task
+control, deployment verification, evidence collection, media checks and the local CI gate:
+
+> **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # any agent that reads .agents/skills
+```
+
+**Level 3 — one skill set, every agent.** If you switch between agents, register the skill
+repository in [flint](https://github.com/lcy362/flint) once: it is a local-first skills manager that
+symlinks or copies the skills into every agent and project directory you use.
+
+```bash
+npx flint-skills-hub
+```
+

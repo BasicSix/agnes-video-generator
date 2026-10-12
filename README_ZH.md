@@ -67,12 +67,34 @@ schema.org 结构化数据，供搜索引擎与 AI 引擎索引。GitHub 不会�
 
 > **🖥️ 在线体验 — 免安装：** 打开 [video.lichuanyang.top](https://video.lichuanyang.top) 即可在浏览器中使用 **简单视频** 模式。输入提示词，立刻生成免费的 AI 视频。
 
-## 🚀 两种使用方式 — 均完全免费
+## 🚀 三种使用方式 — 均完全免费
 
 | 项目 | 运行方式 | 功能定位 | 链接 |
 |------|---------|---------|------|
 | **[Agnes Video Generator](https://github.com/lcy362/agnes-video-generator)**（本项目） | **下载后本地运行** | **功能更强大** —— TTS 配音、自动字幕、数字人、图生视频、关键帧动画、文章成片、断点续传等 | [GitHub](https://github.com/lcy362/agnes-video-generator) |
 | **[FreeShortVideoStudio](https://github.com/lcy362/free-short-video-studio)** | **完全在线，浏览器内运行** | 轻量免安装、零配置，**功能建设中** | [video.lichuanyang.top/studio](https://video.lichuanyang.top/studio) · [GitHub](https://github.com/lcy362/free-short-video-studio) |
+| **[Agnes Video Generator](https://github.com/lcy362/agnes-video-generator)** —— **支持 AI Agent 驱动** | **交给 AI 编程 Agent 运行** | **最省事** —— 仓库自带 [`AGENTS.md`](AGENTS.md) 与伴随技能库（使用 / 排障 / 贡献）：Agent 自己把项目装好、把片子做出来、把失败查清楚 | [Agent 使用指南](docs/public/agent-operations.zh.md) · [Flint](https://github.com/lcy362/flint) |
+
+## 🤖 或者，让 AI Agent 来操作
+
+本项目自带一份为 AI 编程助手写的 [`AGENTS.md`](AGENTS.md)：Agent 读完这一份文档，就能把项目装好、把片子做出来、把失败查清楚。clone 之后直接告诉你的 Agent：
+
+> "阅读这个项目的 AGENTS.md，安装依赖，配置 API Key `<your-key>`，然后启动服务。"
+
+再让它证明部署真的可用：`"跑一下部署验证检查。"` —— 它会按四层验证清单（连通性 → 静态分析 → 端点测试 → 功能检查）逐项执行并汇报结果。
+
+**想让 Agent 省掉"现学"这一步？** 伴随技能库把日常操作打包成三个现成技能——**使用**（部署、选模式、提交并观察任务、在手动模式检查点改产物）、**排障**（查清一次失败的真正原因）、**贡献**（改代码并让 PR 通过 CI）——外加任务控制、部署验证、取证、媒体校验与本地 CI 门禁等小脚本：
+
+**[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
+```
+
+**同时在用好几个 Agent？** [flint](https://github.com/lcy362/flint) 是本地优先的技能管理器：把技能集中在一处，通过 symlink 或复制投放到你用到的每个 Agent 目录与项目目录：`npx flint-skills-hub`。
+
+完整说明：**[让 AI Agent 来操作本项目](docs/public/agent-operations.zh.md)**。
 
 ## ⭐ 支持与贡献
 
@@ -158,6 +180,7 @@ cp .env.example .env    # 然后编辑其中的 AGNES_API_KEY
 
 - **[核心功能](docs/public/features.zh.md)** — 多种创作模式、完全免费的 AI 模型链、AI 旁白配音与智能字幕、灵活的创作控制、生产级可靠性与多语言 Web UI。
 - **[快速开始](docs/public/getting-started.zh.md)** — 4 种部署方式：手动（`start.sh`）、Docker、npm（`npx free-short-video`）、AI Agent 辅助。
+- **[AI Agent 操作指南](docs/public/agent-operations.zh.md)** — Agent 驱动本项目的三档方式：把 `AGENTS.md` 交给它、装上伴随技能库、或用 flint 分发到每个 Agent。
 - **[使用说明](docs/public/usage.zh.md)** — 配置 API Key、选择视频模式、断点续传、三种串联模式，以及日志与输出目录。
 - **[项目架构](docs/public/architecture.zh.md)** — 项目结构与技术栈。
 - **[API 接口](docs/public/api.zh.md)** — 完整 REST 接口列表（进度经任务状态轮询获取，无 WebSocket）。

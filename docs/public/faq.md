@@ -32,6 +32,16 @@ Yes. Pre-built images are published to both [GHCR](https://github.com/lcy362/agn
 
 Absolutely. The project is designed for self-hosting. Just clone the repo, run `./start.sh`, and the server starts on `http://localhost:8765`. No external dependencies, no cloud lock-in. See the [Quick Start](./getting-started.md) section.
 
+### Can an AI agent operate this project for me?
+
+Yes — it was designed for that. The repository ships [`AGENTS.md`](../../AGENTS.md), written for AI coding assistants: clone the project, tell your agent to read it, install dependencies, configure the API key and start the server, then ask it to "run the deployment verification checks". It will walk the four-layer checklist and report the results.
+
+If you would rather not have the agent work the project out first, install the **[companion skill set](https://github.com/lcy362/agnes-video-generator-skills)** — three ready-made skills (`usage`, `troubleshoot`, `contrib`) plus small scripts for task control, deployment verification and evidence collection. Full guide: **[Let an AI Agent Operate This Project](./agent-operations.md)**.
+
+### I use several AI agents — how do I keep the skills in sync?
+
+Register the skill repository once in [flint](https://github.com/lcy362/flint), a local-first skills manager: it keeps your skills in one place and symlinks or copies them into every agent and project directory you use, so a new agent is one toggle away. It runs entirely locally — no cloud, no account, no telemetry. Install with `npx flint-skills-hub` (UI on `http://localhost:8787`). See [Let an AI Agent Operate This Project](./agent-operations.md) for the whole picture.
+
 ### What should I do when generation fails?
 
 Most failures are caused by **transient factors** such as model service fluctuations, network timeouts, or rate limiting. In the in-app **failure panel**, click **Retry Task** first — the task resumes from the failed step (checkpoint-based), and most cases recover on their own without resubmitting.
