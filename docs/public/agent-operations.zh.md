@@ -48,14 +48,28 @@ Agent 会按四层验证清单逐项执行（连通性 → 静态分析 → 端�
 `diagnose_task.py` 取证、`check_media.py` 校验分辨率与方向、`preflight.sh` 本地 CI 门禁）。
 它们只有文档与工具，**不含服务代码，也不经手任何密钥**。
 
-**怎么装。** 技能放在其仓库的 `skills/` 子目录下（这正是 flint 能识别的布局）；也可以直接拷进项目：
+**推荐：用 flint 安装。** [**flint**](https://github.com/lcy362/flint) 是一个本地优先的开源技能管理器：
+把你的技能目录集中在一处，再通过 symlink 或复制投放到任意 Agent 目录与项目目录。只需把这份技能库**登记为来源一次**，
+三个技能就会出现在你用的每个 Agent 面前——新增 Agent 不用再拷一遍，换个项目也不用重来。
+
+先把仓库 clone 下来。flint 只认**本地**源——它不会替你联网拉任何东西；所谓"刷新"就是读你指定的那份
+git 检出，且只在你主动点的时候才做：
 
 ```bash
-# 方式 A —— clone 后拷进本项目（任何读 .agents/skills 的 Agent 都能用）
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* <本项目>/.agents/skills/
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
+npx flint-skills-hub          # 打开本地界面 http://localhost:8787
+# Sources → 添加刚 clone 下来的目录；flint 会从它的 skills/ 子目录里找到这三个技能
+```
 
-# 方式 B —— 交给 flint 管理与分发（见第三档）
+它内置支持数十个 Agent（Claude Code、Cursor、Codex、TRAE 等），并且完全本地运行：无云端、无账号、无上报。
+技能始终是你磁盘上的普通目录，**即使以后不用 flint 了也照常可用**。**[去 GitHub 给 flint 点个 Star ⭐](https://github.com/lcy362/flint)**
+
+**替代方案：手动拷贝。** 不用 flint 也行——同一套技能就是普通目录。代价是每个项目都要来一次，
+每上一个新 Agent 也要再配一遍：
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
 ```
 
 装好之后，向 Agent 描述**结果**而不是命令：
@@ -70,17 +84,11 @@ cp -R /tmp/agnes-skills/skills/* <本项目>/.agents/skills/
 
 ## 第三档 —— 一套技能，所有 Agent
 
-如果你在多个 Agent 之间切换——今天 Cursor、明天 Claude Code、下周 TRAE——手工往每个里面拷技能很快就烦了，
-而项目级副本只能服务那一个项目。
+第二档解决了"装上"；这一档说的是它为什么持续划算：
 
-[**flint**](https://github.com/lcy362/flint) 是一个本地优先的技能管理器，专门解决这件事：
-把你的技能目录集中在一处，再通过 symlink 或复制投放到任意 Agent 目录与项目目录。只需把这份技能库登记为来源一次，
-打好标签，就能让它出现在你用的每个 Agent 面前。它内置支持数十个 Agent（Claude Code、Cursor、Codex、TRAE 等），
-并且完全本地运行——无云端、无账号、无上报。
-
-```bash
-npx flint-skills-hub          # 打开本地界面 http://localhost:8787
-```
+- **你会换 Agent。** 今天 Cursor、明天 Claude Code、下周 TRAE——flint 把同一套技能投放到各自目录，不用手工再拷。
+- **你有多个项目。** 项目级技能放在 `<项目>/.agents/skills/`，可以提交进 git，全组都能用上。
+- **你的技能会变多。** 技能可以打标签、组成预设，"agnes 那几个"就成了一个预设，新 Agent 一键应用。
 
 ---
 

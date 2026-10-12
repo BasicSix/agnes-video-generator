@@ -83,16 +83,27 @@ schema.org 结构化数据，供搜索引擎与 AI 引擎索引。GitHub 不会�
 
 再让它证明部署真的可用：`"跑一下部署验证检查。"` —— 它会按四层验证清单（连通性 → 静态分析 → 端点测试 → 功能检查）逐项执行并汇报结果。
 
-**想让 Agent 省掉"现学"这一步？** 伴随技能库把日常操作打包成三个现成技能——**使用**（部署、选模式、提交并观察任务、在手动模式检查点改产物）、**排障**（查清一次失败的真正原因）、**贡献**（改代码并让 PR 通过 CI）——外加任务控制、部署验证、取证、媒体校验与本地 CI 门禁等小脚本：
+**想让 Agent 省掉"现学"这一步？** 装上伴随技能库——三个现成技能（**使用**：部署、选模式、提交并观察任务、在手动模式检查点改产物；**排障**：查清一次失败的真正原因；**贡献**：改代码并让 PR 通过 CI），外加任务控制、部署验证、取证、媒体校验与本地 CI 门禁等小脚本：
 
 **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
 
+先把仓库 clone 下来：
+
 ```bash
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* .agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
 ```
 
-**同时在用好几个 Agent？** [flint](https://github.com/lcy362/flint) 是本地优先的技能管理器：把技能集中在一处，通过 symlink 或复制投放到你用到的每个 Agent 目录与项目目录：`npx flint-skills-hub`。
+**推荐——交给 [flint](https://github.com/lcy362/flint) 安装与分发。** flint 是一个本地优先的开源技能管理器：把技能集中在一处，通过 symlink 或复制投放到任意 Agent 目录与项目目录。它只认本地源、**不会替你联网拉取**，所以你要登记的就是刚 clone 下来的这个目录；登记之后，三个技能就出现在你用的每个 Agent 面前：
+
+```bash
+npx flint-skills-hub     # Sources → 添加刚 clone 的目录（flint 会读它的 skills/ 子目录）
+```
+
+**或者手动拷贝**——不用 flint 也行，代价是每个项目、每上一个新 Agent 都要再来一次：
+
+```bash
+cp -R agnes-video-generator-skills/skills/* <项目>/.agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
+```
 
 完整说明：**[让 AI Agent 来操作本项目](docs/public/agent-operations.zh.md)**。
 

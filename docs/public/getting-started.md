@@ -185,16 +185,32 @@ control, deployment verification, evidence collection, media checks and the loca
 
 > **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
 
-```bash
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* .agents/skills/     # any agent that reads .agents/skills
-```
-
-**Level 3 — one skill set, every agent.** If you switch between agents, register the skill
-repository in [flint](https://github.com/lcy362/flint) once: it is a local-first skills manager that
-symlinks or copies the skills into every agent and project directory you use.
+Clone the repository first:
 
 ```bash
-npx flint-skills-hub
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
 ```
+
+**Recommended — install it with [flint](https://github.com/lcy362/flint)**: a local-first,
+open-source skills manager that keeps your skills in one place and deploys them into any agent or
+project directory by symlink or copy, with no cloud, no account and no telemetry. flint works on
+local sources only — it never clones anything for you — so you register the directory you just
+cloned:
+
+```bash
+npx flint-skills-hub     # Sources → add the cloned directory (flint reads its skills/ subdirectory)
+```
+
+**Or copy it in by hand** if you would rather not use flint — the trade-off is that you repeat it for
+every project and every new agent:
+
+```bash
+cp -R agnes-video-generator-skills/skills/* <project>/.agents/skills/     # any agent that reads .agents/skills
+```
+
+**Level 3 — one skill set, every agent.** Installing once is the point: when you switch between
+agents (Cursor today, Claude Code tomorrow, TRAE next week) nothing is re-copied by hand, a new agent
+is one toggle away, and a project keeps its skills in `<project>/.agents/skills/` so a team can
+commit them. Likewise, the skills stay plain directories on your disk, so they keep working even if
+you stop using flint. **[Star flint on GitHub ⭐](https://github.com/lcy362/flint)**
 

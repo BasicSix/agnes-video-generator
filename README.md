@@ -83,16 +83,27 @@ This project ships an [`AGENTS.md`](AGENTS.md) written for AI coding assistants,
 
 Then ask it to prove the setup with `"Run the deployment verification checks."` — it executes the four-layer checklist (connectivity → static analysis → endpoint tests → features) and reports each result.
 
-**Want your agent to skip the learning step?** The companion skill set packages the everyday operations into three ready-made skills — **usage** (deploy, pick a mode, submit and watch a task, edit artifacts at Manual Mode checkpoints), **troubleshoot** (find out why a run failed) and **contrib** (change the code, get the PR through CI) — with small scripts for task control, deployment verification, evidence collection, media checks and the local CI gate:
+**Want your agent to skip the learning step?** Install the companion skill set — three ready-made skills (**usage**: deploy, pick a mode, submit and watch a task, edit artifacts at Manual Mode checkpoints; **troubleshoot**: find out why a run failed; **contrib**: change the code, get the PR through CI) plus small scripts for task control, deployment verification, evidence collection, media checks and the local CI gate:
 
 **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
 
+Clone the repository first:
+
 ```bash
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* .agents/skills/     # any agent that reads .agents/skills
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
 ```
 
-**Using several agents?** [flint](https://github.com/lcy362/flint) is a local-first skills manager that keeps the skills in one place and symlinks or copies them into every agent and project directory you use: `npx flint-skills-hub`.
+**Recommended — let [flint](https://github.com/lcy362/flint) install and distribute it.** flint is a local-first, open-source skills manager that keeps your skills in one place and deploys them into any agent or project directory by symlink or copy. It works on local sources only — it never clones anything for you — so you register the directory you just cloned, and the three skills appear in front of every agent you use:
+
+```bash
+npx flint-skills-hub     # Sources → add the cloned directory (flint reads its skills/ subdirectory)
+```
+
+**Or copy it in by hand** — no flint required, but you repeat it for every project and every new agent:
+
+```bash
+cp -R agnes-video-generator-skills/skills/* <project>/.agents/skills/     # any agent that reads .agents/skills
+```
 
 Full guide: **[Let an AI Agent Operate This Project](docs/public/agent-operations.md)**.
 

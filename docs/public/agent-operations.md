@@ -58,15 +58,32 @@ Each skill is a decision tree plus small scripts (`agnes_task.py` to create/poll
 `check_media.py` for resolution and orientation, `preflight.sh` for the local CI gate). They are
 documentation and tooling only — no service code, and no credentials ever pass through them.
 
-**Install it.** The skills live in a `skills/` subdirectory of their own repository, which is the
-layout flint understands; or you can drop them into a project by hand:
+**Recommended: install it with flint.** [**flint**](https://github.com/lcy362/flint) is a
+local-first, open-source skills manager: it keeps your skill directories in one place and deploys
+them into any agent or project directory by symlink or copy. Register this skill repository as a
+source once, and the three skills show up in front of every agent you use — no re-copying when you
+add an agent, no re-doing it per project.
+
+Clone the repository first. flint works on **local** sources only — it never clones anything for you,
+and its refresh reads the git checkout you point it at, and only when you ask it to:
 
 ```bash
-# Option A — clone and copy into this project (works with any agent that reads .agents/skills)
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* <this-project>/.agents/skills/
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
+npx flint-skills-hub          # opens the local UI on http://localhost:8787
+# Sources → add the cloned directory; flint picks up the skills from its skills/ subdirectory
+```
 
-# Option B — let flint manage and distribute them (see Level 3)
+It has built-in support for dozens of agents (Claude Code, Cursor, Codex, TRAE and more), and it is
+local-only: no cloud, no account, no telemetry. Your skills stay plain directories on your own disk,
+so they keep working even if you stop using flint. **[Star flint on GitHub ⭐](https://github.com/lcy362/flint)**
+
+**Alternative: copy the skills in by hand.** No flint required — the same skills are just plain
+directories. The trade-off is that you repeat this once per project, and every new agent has to be
+set up again:
+
+```bash
+git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
+cp -R /tmp/agnes-skills/skills/* .agents/skills/     # any agent that reads .agents/skills
 ```
 
 Once installed, ask your agent for an outcome rather than a command:
@@ -81,18 +98,14 @@ Once installed, ask your agent for an outcome rather than a command:
 
 ## Level 3 — One skill set, every agent
 
-If you switch between agents — Cursor today, Claude Code tomorrow, TRAE next week — copying the
-skills into each one by hand gets old fast, and a project-level copy only helps that one project.
+Level 2 gets the skills installed; this is why it keeps paying off:
 
-[**flint**](https://github.com/lcy362/flint) is a local-first skills manager that solves exactly
-that: it keeps your skill directories in one place and deploys them into any agent or project
-directory by symlink or copy. Register this skill repository as a source once, tag it, and put it in
-front of every agent you use. It has built-in support for dozens of agents (Claude Code, Cursor,
-Codex, TRAE and more), and it is local-only — no cloud, no account, no telemetry.
-
-```bash
-npx flint-skills-hub          # opens the local UI on http://localhost:8787
-```
+- **You switch agents.** Cursor today, Claude Code tomorrow, TRAE next week — flint deploys the same
+  skills into each agent's own directory, so nothing is re-copied by hand.
+- **You have several projects.** A project keeps its skills in `<project>/.agents/skills/`, which you
+  can commit so the whole team gets them.
+- **Your library grows.** Skills can be tagged and grouped into presets, so "the agnes ones" becomes
+  a preset you apply to a new agent in one click.
 
 ---
 

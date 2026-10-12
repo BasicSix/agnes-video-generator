@@ -178,18 +178,30 @@ Agent 会按 `AGENTS.md` 中的四层验证清单（连通性 → 静态分析 �
 
 > **[lcy362/agnes-video-generator-skills](https://github.com/lcy362/agnes-video-generator-skills)**
 
-```bash
-git clone https://github.com/lcy362/agnes-video-generator-skills.git /tmp/agnes-skills
-cp -R /tmp/agnes-skills/skills/* .agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
-```
-
-**第三档 —— 一套技能，所有 Agent。** 如果你在多个 Agent 之间切换，把技能库在
-[flint](https://github.com/lcy362/flint) 里登记一次即可：它是本地优先的技能管理器，
-通过 symlink 或复制把技能投放到你用到的每个 Agent 目录与项目目录。
+先把仓库 clone 下来：
 
 ```bash
-npx flint-skills-hub
+git clone https://github.com/lcy362/agnes-video-generator-skills.git
 ```
+
+**推荐——用 [flint](https://github.com/lcy362/flint) 安装**：它是一个本地优先的开源技能管理器：
+把技能集中在一处，通过 symlink 或复制投放到任意 Agent 目录与项目目录，无云端、无账号、无上报。
+flint 只认本地源、不会替你联网拉取，所以要登记的就是刚 clone 下来的这个目录：
+
+```bash
+npx flint-skills-hub     # Sources → 添加刚 clone 的目录（flint 会读它的 skills/ 子目录）
+```
+
+**或者手动拷贝**——不用 flint 也行，代价是每个项目、每上一个新 Agent 都要再来一次：
+
+```bash
+cp -R agnes-video-generator-skills/skills/* <项目>/.agents/skills/     # 任何读 .agents/skills 的 Agent 都能用
+```
+
+**第三档 —— 一套技能，所有 Agent。** 装一次才是重点：以后在 Cursor / Claude Code / TRAE 之间切换不用手工再拷，
+新增 Agent 只需一键，项目级技能放在 `<项目>/.agents/skills/` 还能提交进 git 全组共用；
+而且技能始终是你磁盘上的普通目录，**即使以后不用 flint 了也照常可用**。
+**[去 GitHub 给 flint 点个 Star ⭐](https://github.com/lcy362/flint)**
 
 
 ---
