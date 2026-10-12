@@ -78,6 +78,9 @@ def api(monkeypatch):
     # 不落盘 error_logs，避免测试污染工作目录
     monkeypatch.setattr(av, "collect_error", lambda *a, **k: None)
     monkeypatch.setattr(av, "collect_error_from_exception", lambda *a, **k: None)
+    # 忙轨退避缩到 0，避免测试真的等 30–60s（v7.1 两轨归拢后 429 也走忙轨）
+    monkeypatch.setattr(av, "_QUEUE_RETRY_BASE_DELAY", 0.0)
+    monkeypatch.setattr(av, "_QUEUE_RETRY_JITTER", 0.0)
     return av.AgnesVideoAPI(api_key="k1", max_retries=3, retry_base_delay=0.001)
 
 
@@ -182,11 +185,15 @@ async def test_cancelled_stop_passthrough(api, monkeypatch):
 
 
 async def test_submit_exhausted_raises(api, monkeypatch):
-    """一直 5xx → 重试耗尽抛 RuntimeError（不静默吞掉）。"""
+    """一直非忙 5xx（500）→ 故障轨重试耗尽抛 RuntimeError（不静默吞掉）。
+
+    注：503 自 v7.1 起归「忙轨」（固定间隔 + 时长预算），不再受 max_retries 次数
+    封顶，故此处用 500 验证故障轨的次数封顶语义。
+    """
     _install_ring(monkeypatch, ["k1"])
 
     def fake_post(url, headers=None, json=None, timeout=None):
-        return FakeResponse(503)
+        return FakeResponse(500)
 
     monkeypatch.setattr(av.requests, "post", fake_post)
 
@@ -277,6 +284,30 @@ def test_keyring_single_key_rotate_keeps_same_key():
     assert ring.next() == "k1"
     assert ring.rotate() == "k1"
     assert ring.next() == "k1"
+
+
+# ── v7.1：401 归因登记不参与选 Key（不剔除 / 不降权 / 不改轮转） ──────
+
+
+def test_keyring_auth_failure_registry_keeps_rotation_untouched():
+    """登记 401 归因不得改变轮转序列（否则等于执行中偷偷调整了选 Key）。"""
+    from core.api.key_manager import KeyRing
+
+    ring = KeyRing(["k1", "k2"])
+    baseline = [ring.next() for _ in range(4)]        # k1,k2,k1,k2
+    ring.mark_auth_failed("k1", domain="cn", message="Invalid token")
+    ring.mark_auth_failed("k1", domain="cn", message="Invalid token")
+
+    # 若 mark_auth_failed 消费了轮转计数（如误用 describe()），此处序列会整体错位
+    assert [ring.next() for _ in range(4)] == baseline
+    rec = ring.auth_failures()["k1"]
+    assert rec["count"] == 2 and rec["status"] == 401
+    assert rec["domain"] == "cn" and rec["message"] == "Invalid token"
+    assert rec["last_at"] >= rec["first_at"]
+    assert "k2" not in ring.auth_failures()           # 未命中 401 的 Key 不被标记
+
+    ring.clear_auth_failures("k1")
+    assert ring.auth_failures() == {}
 
 
 # ── 1.3 自适应轮询间隔 ─────────────────────────────────────────────
