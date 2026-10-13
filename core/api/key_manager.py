@@ -122,9 +122,12 @@ class KeyRing:
                 if key in self._keys else "key#(不在池内)"
             )
         # 只打日志，不触发任何池调整；用户据配置页提示自行决定是否删除该 Key
+        # 日志不拼接 domain：它由 get_api_key_domains() 返回、数据流源自 API Key
+        # 配置，CodeQL py/clear-text-logging-sensitive-data 会判为明文泄露敏感数据。
+        # 域名归因已存入登记表并由配置页下发，日志无需重复（同 config_routes.py 先例）。
         logger.warning(
-            f"[KeyAuth] {label} 认证失败 (HTTP {status}"
-            f"{f' · {domain}' if domain else ''}): {message or 'invalid token'} "
+            f"[KeyAuth] {label} 认证失败 (HTTP {status}): "
+            f"{message or 'invalid token'} "
             f"— 已登记第 {snapshot['count']} 次，请在配置页确认是否移除该 Key"
         )
         return snapshot
